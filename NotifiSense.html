@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --card-bg: #fff;
+      --card-border: #dbeafe;
+      --icon-bg: #60a5fa;
+      --icon-color: #fff;
+      --text-color: #6b7280;
+      --read-bg: #3b82f6;
+      --read-color: #fff;
+      --mark-as-read-bg: #f9fafb;
+      --mark-as-read-hover-bg: #e2e8f0;
+      --input-bg: #fff;
+      --input-border: #d1d5db;
+      --input-focus-border: #60a5fa;
+      --label-color: #4b5563;
+      --tooltip-bg: #000;
+      --tooltip-color: #fff;
+      --loader-bg: #60a5fa;
+      --toggle-bg: #d1d5db;
+      --toggle-checked-bg: #60a5fa;
+    }
+
+    [data-theme="dark"] {
+      --card-bg: #222;
+      --card-border: #404040;
+      --icon-bg: #60a5fa;
+      --icon-color: #fff;
+      --text-color: #ccc;
+      --read-bg: #3b82f6;
+      --read-color: #fff;
+      --mark-as-read-bg: #363636;
+      --mark-as-read-hover-bg: #4a4a4a;
+      --input-bg: #333;
+      --input-border: #444;
+      --input-focus-border: #60a5fa;
+      --label-color: #aaa;
+      --tooltip-bg: #333;
+      --tooltip-color: #fff;
+      --loader-bg: #60a5fa;
+      --toggle-bg: #444;
+      --toggle-checked-bg: #60a5fa;
+    }
+
+    [data-theme="solarized"] {
+      --card-bg: #fdf6e3;
+      --card-border: #657b83;
+      --icon-bg: #dc322f;
+      --icon-color: #fdf6e3;
+      --text-color: #586e75;
+      --read-bg: #268bd2;
+      --read-color: #fdf6e3;
+      --mark-as-read-bg: #fdf6e3;
+      --mark-as-read-hover-bg: #eee8d5;
+      --input-bg: #eee8d5;
+      --input-border: #93a1a1;
+      --input-focus-border: #268bd2;
+      --label-color: #657b83;
+      --tooltip-bg: #586e75;
+      --tooltip-color: #fdf6e3;
+      --loader-bg: #268bd2;
+      --toggle-bg: #93a1a1;
+      --toggle-checked-bg: #268bd2;
+    }
+
+    body {
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      font-family: 'Arial', sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .card {
+      max-width: 400px;
+      margin: 2rem auto;
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s, border-color 0.3s;
+      position: relative;
+      animation: fadeIn 0.5s;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--icon-bg);
+      color: var(--icon-color);
+      border-radius: 50%;
+      padding: 0.75rem;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: -0.5rem;
+      right: -0.5rem;
+      background-color: red;
+      color: white;
+      border-radius: 9999px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .icon svg {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+
+    .alert {
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .message,
+    .quote,
+    .time,
+    .weather {
+      margin-top: 1rem;
+    }
+
+    .quote {
+      font-style: italic;
+      color: var(--text-color);
+    }
+
+    .actions {
+      margin-top: 1.5rem;
+    }
+
+    .actions a {
+      text-decoration: none;
+      display: inline-block;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .read {
+      background-color: var(--read-bg);
+      color: var(--read-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .mark-as-read {
+      background-color: var(--mark-as-read-bg);
+      color: var(--text-color);
+    }
+
+    .mark-as-read:hover {
+      background-color: var(--mark-as-read-hover-bg);
+    }
+
+    .dismiss {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-color);
+      transition: color 0.15s ease;
+    }
+
+    .dismiss:hover {
+      color: var(--read-bg);
+    }
+
+    .card.hidden {
+      display: none;
+    }
+
+    .dark-mode-toggle {
+      display: inline-block;
+      margin: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: var(--read-bg);
+      color: var(--read-color);
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dark-mode-toggle:hover {
+      background-color: var(--mark-as-read-hover-bg);
+      color: var(--read-bg);
+    }
+
+    .theme-selector {
+      text-align: center;
+      margin: 1rem;
+    }
+
+    .theme-selector button {
+      margin-right: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .theme-selector button:hover {
+      background-color: var(--mark-as-read-hover-bg);
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.5rem;
+      background-color: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 0.5rem;
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: var(--input-focus-border);
+      outline: none;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      color: var(--label-color);
+      font-size: 1rem;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 120px;
+      background-color: var(--tooltip-bg);
+      color: var(--tooltip-color);
+      text-align: center;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .loader {
+      border: 4px solid var(--loader-bg);
+      border-top: 4px solid var(--card-bg);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--toggle-bg);
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--toggle-checked-bg);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+  </style>
+  <title>Notification Card</title>
+</head>
+<body>
+  <div class="theme-selector">
+    <button onclick="setTheme('light')">Light</button>
+    <button onclick="setTheme('dark')">Dark</button>
+    <button onclick="setTheme('solarized')">Solarized</button>
+  </div>
+
+  <div class="card" id="notification-card">
+    <button class="dismiss" onclick="dismissCard()">✖</button>
+    <div class="header">
+      <span class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="bi bi-bell">
+          <path d="M12 24a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zm6.5-6V11a6.5 6.5 0 1 0-13 0v7l-1 1v1h16v-1l-1-1zm-6.5-2a.75.75 0 0 1-.75-.75V11a.75.75 0 0 1 1.5 0v4.5A.75.75 0 0 1 12 16z" fill-rule="evenodd"></path>
+        </svg>
+        <span class="badge" id="unread-count">5</span>
+      </span>
+      <p class="alert">New message!</p>
+    </div>
+
+    <p class="message">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam ea quo unde vel adipisci blanditiis voluptates eum. Nam, cum minima?</p>
+
+    <p class="quote" id="random-quote"></p>
+
+    <p class="time" id="current-time"></p>
+
+    <p class="weather" id="weather-info"></p>
+
+    <div class="actions">
+      <a class="read" href="">Take a Look</a>
+      <a class="mark-as-read" href="">Mark as Read</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      if (localStorage.getItem('theme')) {
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
+      }
+
+      if (!localStorage.getItem('cardDismissed')) {
+        const notificationSound = new Audio('notification.mp3');
+        notificationSound.play();
+        startCountdown(10);
+      } else {
+        dismissCard();
+      }
+
+      makeDraggable(document.getElementById('notification-card'));
+      displayRandomQuote();
+      displayCurrentTime();
+      displayWeather();
+    });
+
+    function toggleDarkMode() {
+      if (document.documentElement.getAttribute('data-theme') === 'dark') {
+        setTheme('light');
+      } else {
+        setTheme('dark');
+      }
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    function dismissCard() {
+      const card = document.getElementById('notification-card');
+      card.style.animation = 'fadeOut 0.5s forwards';
+      card.addEventListener('animationend', () => {
+        card.classList.add('hidden');
+        localStorage.setItem('cardDismissed', 'true');
+      });
+    }
+
+    function startCountdown(seconds) {
+      const countdownElement = document.createElement('div');
+      countdownElement.id = 'countdown';
+      countdownElement.style.position = 'absolute';
+      countdownElement.style.top = '0.5rem';
+      countdownElement.style.left = '0.5rem';
+      countdownElement.style.padding = '0.5rem';
+      countdownElement.style.background = 'rgba(0, 0, 0, 0.7)';
+      countdownElement.style.color = '#fff';
+      countdownElement.style.borderRadius = '0.5rem';
+      document.getElementById('notification-card').appendChild(countdownElement);
+
+      const interval = setInterval(() => {
+        countdownElement.innerText = `Auto-dismiss in ${seconds}s`;
+        if (seconds <= 0) {
+          clearInterval(interval);
+          dismissCard();
+        }
+        seconds--;
+      }, 1000);
+    }
+
+    function makeDraggable(element) {
+      let isDragging = false;
+      let startX, startY;
+
+      element.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX - element.offsetLeft;
+        startY = e.clientY - element.offsetTop;
+        element.style.cursor = 'grabbing';
+        element.style.animation = 'shake 0.5s';
+        element.style.animationIterationCount = 'infinite';
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+
+      function onMouseMove(e) {
+        if (isDragging) {
+          element.style.left = `${e.clientX - startX}px`;
+          element.style.top = `${e.clientY - startY}px`;
+        }
+      }
+
+      function onMouseUp() {
+        isDragging = false;
+        element.style.cursor = 'grab';
+        element.style.animation = '';
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+    }
+
+    function displayRandomQuote() {
+      const quotes = [
+        "The best way to predict the future is to invent it.",
+        "Life is 10% what happens to us and 90% how we react to it.",
+        "The only way to do great work is to love what you do.",
+        "Don't watch the clock; do what it does. Keep going."
+      ];
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      document.getElementById('random-quote').innerText = quotes[randomIndex];
+    }
+
+    function displayCurrentTime() {
+      const timeElement = document.getElementById('current-time');
+      setInterval(() => {
+        const now = new Date();
+        timeElement.innerText = `Current Time: ${now.toLocaleTimeString()}`;
+      }, 1000);
+    }
+
+    function displayWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          const weatherInfo = `Weather at (${latitude.toFixed(2)}, ${longitude.toFixed(2)}): Sunny, 25°C`;
+          document.getElementById('weather-info').innerText = weatherInfo;
+        });
+      } else {
+        document.getElementById('weather-info').innerText = 'Weather information is not available.';
+      }
+    }
+  </script>
+</body>
+</html>
